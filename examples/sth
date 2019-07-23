@@ -1,0 +1,23 @@
+import os
+import sys
+# module_path = os.path.abspath(os.path.join('..'))
+# if module_path not in sys.path:
+#     sys.path.append(module_path)
+
+import bandits as bd
+
+n_arms = 100
+bandit = bd.GaussianBandit(n_arms)
+n_trials = 1000
+n_experiments = 500
+
+agents = [
+    bd.Agent(bandit, bd.EpsilonGreedyPolicy(0.1)),
+    bd.Agent(bandit, bd.UCBPolicy(2)),
+    bd.GradientAgent(bandit, bd.SoftmaxPolicy(), alpha=0.4),
+    bd.GradientAgent(bandit, bd.SoftmaxPolicy(), alpha=0.4, baseline=False)
+
+]
+env = bd.Environment(bandit, agents, 'Upper Confidence Bound (UCB1)')
+scores, optimal = env.run(n_trials, n_experiments)
+env.plot_results(scores, optimal)
